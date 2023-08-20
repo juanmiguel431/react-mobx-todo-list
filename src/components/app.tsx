@@ -1,5 +1,7 @@
 import React from 'react';
 import { Tabs, TabsProps } from 'antd';
+import Users from './users';
+import Todos from './todos';
 
 // We should have 2 views in our application
 // We should be able to move between the 2 views
@@ -21,12 +23,12 @@ function App() {
     {
       key: '1',
       label: `Users`,
-      children: `Content of Tab Pane 2`,
+      children: <Users/>,
     },
     {
       key: '2',
       label: `To-Do List`,
-      children: `Content of Tab Pane 1`,
+      children: <Todos/>,
     },
   ];
 
