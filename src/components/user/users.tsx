@@ -130,7 +130,7 @@ export const Users: React.FC = observer(function Users() {
       {contextHolder}
 
       <Drawer
-        title="User"
+        title={user ? `Update user: '${user?.name}'` : 'Add New User'}
         destroyOnClose
         width="40%"
         onClose={onClose}
