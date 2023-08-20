@@ -1,11 +1,13 @@
 import React, { useCallback, useContext, useState } from 'react';
 import { StoreContext } from '../stores';
 import { observer } from 'mobx-react-lite';
-import { Button, Input, Col, Row } from 'antd';
+import { Button, Input, Col, Row, Table, Divider, Modal } from 'antd';
+import { toJS } from 'mobx';
+import { User } from '../models';
 
 export const Users: React.FC = observer(function Users() {
   const [input, setInput] = useState('');
-
+  const [modal, contextHolder] = Modal.useModal();
   const { userStore } = useContext(StoreContext);
 
   const onAddNew = useCallback(() => {
@@ -13,6 +15,36 @@ export const Users: React.FC = observer(function Users() {
     userStore.add(input);
     setInput('');
   }, [userStore, input]);
+
+  const tableActions = useCallback((v: any, r: User, i: number) => {
+    return (
+      <>
+        <Button
+          onClick={_ => {
+            console.log('Update', r.name);
+          }}
+        >
+          Update
+        </Button>
+        <Divider type="vertical"/>
+        <Button
+          danger
+          type="primary"
+          onClick={async _ => {
+            const confirmed = await modal.confirm({
+              title: `Are you sure you?`,
+              content: `User ${r.name} will be deleted.`,
+            });
+            if (confirmed){
+              userStore.remove(r.id);
+            }
+          }}
+        >
+          Delete
+        </Button>
+      </>
+    )
+  }, [modal, userStore]);
 
   return (
     <div className="users">
@@ -36,9 +68,22 @@ export const Users: React.FC = observer(function Users() {
           </Button>
         </Col>
       </Row>
-      <ul>
-        {userStore.items.map(u => <li key={u.id}>{u.name}</li>)}
-      </ul>
+      <Table
+        rowKey="id"
+        dataSource={toJS(userStore.items)}
+        columns={[
+          {
+            title: 'Name',
+            dataIndex: 'name'
+          },
+          {
+            title: 'Name',
+            dataIndex: 'name',
+            render: tableActions
+          }
+        ]}
+      />
+      {contextHolder}
     </div>
   );
 });

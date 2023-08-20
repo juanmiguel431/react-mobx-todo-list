@@ -4,7 +4,7 @@ import TodoStore from '../stores/todo-store';
 import UserStore from '../stores/user-store';
 
 export class User {
-  id: string | null = null;
+  id: string;
   name: string | null = null;
 
   constructor(store: UserStore) {
@@ -17,7 +17,7 @@ export class User {
 }
 
 export class Todo {
-  id: string | null = null;
+  id: string;
   name: string | null = null;
   userId: string | null = null;
 
