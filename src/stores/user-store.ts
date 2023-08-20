@@ -4,6 +4,7 @@ import { RootStore } from './index';
 
 export default class UserStore {
   items: User[] = [];
+  selected: User | null = null;
   private rootStore: RootStore;
 
   constructor(rootStore: RootStore) {
@@ -13,8 +14,15 @@ export default class UserStore {
       items: observable,
       add: action,
       remove: action,
-      update: action
+      update: action,
+      selected: observable,
+      select: action
     });
+  }
+
+  select(userId: string) {
+    const user = this.items.find(u => u.id === userId);
+    this.selected = user || null;
   }
 
   add(name: string) {

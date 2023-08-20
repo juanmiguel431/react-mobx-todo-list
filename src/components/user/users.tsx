@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useState } from 'react';
 import { StoreContext } from '../../stores';
-import { observer } from 'mobx-react-lite';
+import { Observer, observer } from 'mobx-react-lite';
 import { Button, Input, Col, Row, Table, Divider, Modal, Drawer, Space, Form } from 'antd';
 import { toJS } from 'mobx';
 import { User } from '../../models';
@@ -34,13 +34,22 @@ export const Users: React.FC = observer(function Users() {
   const tableActions = useCallback((v: any, user: User, i: number) => {
     return (
       <>
-        <Button
-          onClick={_ => {
-            console.log('Select', user.name);
+        <Observer>
+          {() => {
+            const selected = userStore.selected?.id === user.id;
+            return (
+              <Button
+                style={{width: '100px'}}
+                disabled={selected}
+                onClick={_ => {
+                  userStore.select(user.id);
+                }}
+              >
+                {selected ? 'Selected' : 'Select'}
+              </Button>
+            );
           }}
-        >
-          Select
-        </Button>
+        </Observer>
         <Divider type="vertical"/>
         <Button
           onClick={_ => {
@@ -60,7 +69,7 @@ export const Users: React.FC = observer(function Users() {
         </Button>
       </>
     )
-  }, [onDelete]);
+  }, [userStore, onDelete, form]);
 
   const onClose = useCallback(() => {
     setOpen(false);
@@ -77,7 +86,8 @@ export const Users: React.FC = observer(function Users() {
 
       setOpen(false);
       form.resetFields();
-    }, () => {})
+    }, () => {
+    })
   }, [form, userStore, user]);
 
   return (
@@ -126,19 +136,19 @@ export const Users: React.FC = observer(function Users() {
         onClose={onClose}
         open={open}
         bodyStyle={{ paddingBottom: 80 }}
-        footerStyle={{display: 'flex', justifyContent: 'end'}}
+        footerStyle={{ display: 'flex', justifyContent: 'end' }}
         footer={
-        <div className="footer">
-          <Space>
-            <Button onClick={onClose}>Cancel</Button>
-            <Button onClick={onSave} type="primary">
-              Save
-            </Button>
-          </Space>
-        </div>
+          <div className="footer">
+            <Space>
+              <Button onClick={onClose}>Cancel</Button>
+              <Button onClick={onSave} type="primary">
+                Save
+              </Button>
+            </Space>
+          </div>
         }
       >
-        <UserForm form={form} />
+        <UserForm form={form}/>
       </Drawer>
 
     </div>
