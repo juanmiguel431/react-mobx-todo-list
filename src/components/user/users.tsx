@@ -24,7 +24,7 @@ export const Users: React.FC = observer(function Users() {
   const onDelete = useCallback(async (user: User) => {
     const confirmed = await modal.confirm({
       title: `Are you sure you?`,
-      content: `User ${user.name} will be deleted.`,
+      content: `User '${user.name}' will be deleted.`,
     });
     if (confirmed) {
       userStore.remove(user.id);
