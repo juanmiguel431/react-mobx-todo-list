@@ -1,27 +1,32 @@
 import React, { useCallback, useContext, useState } from 'react';
-import { StoreContext } from '../stores';
+import { StoreContext } from '../../stores';
 import { observer } from 'mobx-react-lite';
-import { Button, Input, Col, Row, Table, Divider, Modal } from 'antd';
+import { Button, Input, Col, Row, Table, Divider, Modal, Drawer, Space, Form } from 'antd';
 import { toJS } from 'mobx';
-import { User } from '../models';
+import { User } from '../../models';
+import UserForm from './user-form';
 
 export const Users: React.FC = observer(function Users() {
   const [input, setInput] = useState('');
+  const [open, setOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
   const [modal, contextHolder] = Modal.useModal();
   const { userStore } = useContext(StoreContext);
 
+  const [form] = Form.useForm<User>();
+
   const onAddNew = useCallback(() => {
-    if (!input) return;
-    userStore.add(input);
-    setInput('');
-  }, [userStore, input]);
+    setUser(null);
+    form.resetFields();
+    setOpen(true);
+  }, [form]);
 
   const onDelete = useCallback(async (user: User) => {
     const confirmed = await modal.confirm({
       title: `Are you sure you?`,
       content: `User ${user.name} will be deleted.`,
     });
-    if (confirmed){
+    if (confirmed) {
       userStore.remove(user.id);
     }
   }, [userStore, modal]);
@@ -31,7 +36,17 @@ export const Users: React.FC = observer(function Users() {
       <>
         <Button
           onClick={_ => {
-            console.log('Update', user.name);
+            console.log('Select', user.name);
+          }}
+        >
+          Select
+        </Button>
+        <Divider type="vertical"/>
+        <Button
+          onClick={_ => {
+            form.setFieldsValue(user);
+            setUser(user);
+            setOpen(true);
           }}
         >
           Update
@@ -39,7 +54,6 @@ export const Users: React.FC = observer(function Users() {
         <Divider type="vertical"/>
         <Button
           danger
-          type="primary"
           onClick={_ => onDelete(user)}
         >
           Delete
@@ -48,12 +62,31 @@ export const Users: React.FC = observer(function Users() {
     )
   }, [onDelete]);
 
+  const onClose = useCallback(() => {
+    setOpen(false);
+  }, []);
+
+  const onSave = useCallback(() => {
+    form.validateFields().then((formValues) => {
+      if (user) {
+        Object.assign(user, formValues);
+        userStore.update(user);
+      } else {
+        userStore.add(formValues.name || '');
+      }
+
+      setOpen(false);
+      form.resetFields();
+    }, () => {})
+  }, [form, userStore, user]);
+
   return (
     <div className="users">
       <h2>Users</h2>
       <Row gutter={16}>
         <Col span={12}>
           <Input
+            allowClear
             placeholder="Juan Miguel"
             value={input}
             onChange={e => setInput(e.target.value)}
@@ -62,7 +95,6 @@ export const Users: React.FC = observer(function Users() {
         </Col>
         <Col span={12}>
           <Button
-            disabled={!input}
             type="primary"
             onClick={onAddNew}
           >
@@ -86,6 +118,29 @@ export const Users: React.FC = observer(function Users() {
         ]}
       />
       {contextHolder}
+
+      <Drawer
+        title="User"
+        destroyOnClose
+        width="40%"
+        onClose={onClose}
+        open={open}
+        bodyStyle={{ paddingBottom: 80 }}
+        footerStyle={{display: 'flex', justifyContent: 'end'}}
+        footer={
+        <div className="footer">
+          <Space>
+            <Button onClick={onClose}>Cancel</Button>
+            <Button onClick={onSave} type="primary">
+              Save
+            </Button>
+          </Space>
+        </div>
+        }
+      >
+        <UserForm form={form} />
+      </Drawer>
+
     </div>
   );
 });

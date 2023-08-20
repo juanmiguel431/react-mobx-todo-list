@@ -1,2 +1,2 @@
-export * from './todos';
-export * from './users';
+export * from './todo/todos';
+export * from './user/users';

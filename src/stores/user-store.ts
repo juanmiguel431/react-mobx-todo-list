@@ -12,7 +12,8 @@ export default class UserStore {
     makeObservable(this, {
       items: observable,
       add: action,
-      remove: action
+      remove: action,
+      update: action
     });
   }
 
@@ -20,6 +21,12 @@ export default class UserStore {
     const item = new User(this);
     item.name = name;
     this.items.push(item);
+  }
+
+  update(user: User) {
+    const item = this.items.find(u => u.id === user.id);
+    if (!item) return;
+    Object.assign(item, user);
   }
 
   remove(id: string) {

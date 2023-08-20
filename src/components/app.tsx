@@ -1,7 +1,7 @@
 import React from 'react';
 import { Tabs, TabsProps } from 'antd';
-import Users from './users';
-import Todos from './todos';
+import Users from './user/users';
+import Todos from './todo/todos';
 
 // We should have 2 views in our application
 // We should be able to move between the 2 views
