@@ -31,7 +31,7 @@ export const Users: React.FC = observer(function Users() {
     }
   }, [userStore, modal]);
 
-  const tableActions = useCallback((v: any, user: User, i: number) => {
+  const tableActions = useCallback((_: any, user: User) => {
     return (
       <>
         <Observer>
