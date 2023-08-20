@@ -16,12 +16,22 @@ export const Users: React.FC = observer(function Users() {
     setInput('');
   }, [userStore, input]);
 
-  const tableActions = useCallback((v: any, r: User, i: number) => {
+  const onDelete = useCallback(async (user: User) => {
+    const confirmed = await modal.confirm({
+      title: `Are you sure you?`,
+      content: `User ${user.name} will be deleted.`,
+    });
+    if (confirmed){
+      userStore.remove(user.id);
+    }
+  }, [userStore, modal]);
+
+  const tableActions = useCallback((v: any, user: User, i: number) => {
     return (
       <>
         <Button
           onClick={_ => {
-            console.log('Update', r.name);
+            console.log('Update', user.name);
           }}
         >
           Update
@@ -30,21 +40,13 @@ export const Users: React.FC = observer(function Users() {
         <Button
           danger
           type="primary"
-          onClick={async _ => {
-            const confirmed = await modal.confirm({
-              title: `Are you sure you?`,
-              content: `User ${r.name} will be deleted.`,
-            });
-            if (confirmed){
-              userStore.remove(r.id);
-            }
-          }}
+          onClick={_ => onDelete(user)}
         >
           Delete
         </Button>
       </>
     )
-  }, [modal, userStore]);
+  }, [onDelete]);
 
   return (
     <div className="users">
