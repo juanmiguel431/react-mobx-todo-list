@@ -17,7 +17,9 @@
     "web-vitals": "^2.1.4",
     "uuid": "^9.0.0",
     "mobx": "^6.10.0",
-    "mobx-react-lite": "^4.0.3"
+    "mobx-react-lite": "^4.0.3",
+    "antd": "^5.8.4",
+    "@ant-design/icons": "^5.2.5"
   },
   "devDependencies": {
     "@types/uuid": "^9.0.2"
